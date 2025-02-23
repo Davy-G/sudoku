@@ -53,7 +53,6 @@ export function validateGameState(gameState: GameState, actionHistory: ActionHis
         const rowGroup = [...localState[row]];
         for (const rowNumber of numberRow) {
           if (rowGroup[rowNumber] === number) {
-            console.log('Found duplicate', row, rowNumber);
             return {
               isValid: false,
               errorMessage: 'Number already exists in the same row',
