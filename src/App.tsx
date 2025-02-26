@@ -6,7 +6,7 @@ import GameBoard from '@/components/GameBoard/GameBoard';
 import NumberKeyboard from '@/components/NumberKeyboard/NumberKeyboard';
 
 // Types
-import {Action, ActionHistory, GameState, SelectedSquare, ValidationResult} from '@/types';
+import {ActionHistory, GameState, SelectedSquare, ValidationResult} from '@/types';
 
 // Utils
 import {validateGameState} from '@/utils/game-state';
@@ -25,16 +25,18 @@ const EMPTY_GAME_STATE: GameState = [
     [null, null, null, null, null, null, null, null, null],
 ];
 
+let actionHistory: ActionHistory = [];
+
 function App() {
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>(null);
     const [selectedNumberKey, setSelectedNumberKey] = useState<number | null>(null);
     const [gameState, setGameState] = useState<GameState>(EMPTY_GAME_STATE);
-    const [actionHistory, setActionHistory] = useState<ActionHistory>([]);
+    // const [actionHistory, setActionHistory] = useState<ActionHistory>([]);
     const [validationResult, setValidationResult] = useState<ValidationResult>({isValid: true});
 
-    function addActionToHistory(action: Action) {
-        setActionHistory((prevState) => [...prevState, action]);
-    }
+    // function addActionToHistory(actionHistory: ActionHistory) {
+    //     setActionHistory(actionHistory);
+    // }
 
     const handleNumberClick = useCallback((numberIndex: number, groupIndex: number) => {
         if (selectedSquare?.numberIndex === numberIndex && selectedSquare?.groupIndex === groupIndex) {
@@ -44,6 +46,14 @@ function App() {
             if (selectedNumberKey) {
                 const prevState = [...gameState];
                 if (prevState[groupIndex][numberIndex] !== selectedNumberKey) {
+                    let old = [...actionHistory];
+                    old.push({
+                        type: 'add-number',
+                        square: {numberIndex, groupIndex},
+                        newValue: selectedNumberKey,
+                        previousValue: prevState[groupIndex][numberIndex],
+                    });
+                    actionHistory = old;
                     setGameState((prevState) => {
                         const newState = [...prevState];
                         newState[groupIndex][numberIndex] = selectedNumberKey;
@@ -51,25 +61,15 @@ function App() {
                         if (!validation.isValid) {
                             setValidationResult(validation);
                             newState[groupIndex][numberIndex] = null;
-                            addActionToHistory({
-                                type: 'remove-number',
-                                square: {numberIndex, groupIndex},
-                                newValue: null,
-                                previousValue: prevState[groupIndex][numberIndex],
-                            });
+                            // old.pop();
+                            // actionHistory = old;
                             return newState;
                         }
 
                         setValidationResult(validation);
-                        addActionToHistory({
-                            type: 'add-number',
-                            square: {numberIndex, groupIndex},
-                            newValue: selectedNumberKey,
-                            previousValue: prevState[groupIndex][numberIndex],
-                        });
+
                         return newState;
                     });
-
 
 
                 }
@@ -85,6 +85,14 @@ function App() {
             if (selectedSquare) {
                 const prevState = [...gameState];
                 if (prevState[selectedSquare.groupIndex][selectedSquare.numberIndex] !== number) {
+                    let old = [...actionHistory];
+                    old.push({
+                        type: 'add-number',
+                        square: selectedSquare,
+                        newValue: number,
+                        previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                    });
+                    actionHistory = old;
                     setGameState((prevState) => {
                         const newState = [...prevState];
                         newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = number;
@@ -92,22 +100,13 @@ function App() {
                         if (!validation.isValid) {
                             setValidationResult(validation);
                             newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = null;
-                            addActionToHistory({
-                                type: 'remove-number',
-                                square: selectedSquare,
-                                newValue: null,
-                                previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
-                            });
+                            // old.pop();
+                            // actionHistory = old;
                             return newState;
                         }
 
                         setValidationResult(validation);
-                        addActionToHistory({
-                            type: 'add-number',
-                            square: selectedSquare,
-                            newValue: number,
-                            previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
-                        });
+
                         return newState;
                     });
 
@@ -123,23 +122,16 @@ function App() {
                 setGameState((prevState) => {
                     const newState = [...prevState];
                     newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = null;
-                    // let validation = validateGameState(newState, actionHistory);
-                    // if (!validation.isValid) {
-                    //     setValidationResult(validation);
-                    //     return newState;
-                    // }
-                    // setValidationResult(validation);
-
                     return newState;
-
                 });
-
-                addActionToHistory({
-                    type: 'remove-number',
-                    square: selectedSquare,
-                    newValue: null,
-                    previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
-                });
+                // let old = [...actionHistory];
+                // old.push({
+                //     type: 'remove-number',
+                //     square: selectedSquare,
+                //     newValue: null,
+                //     previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                // });
+                // actionHistory = old;
 
 
             }

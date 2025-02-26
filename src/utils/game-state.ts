@@ -22,17 +22,17 @@ export function validateGameState(gameState: GameState, actionHistory: ActionHis
   }
 
   const localState = [...gameState];
+  console.log('Validating game state', localState, gameState, actionHistory);
   const lastAction = actionHistory[actionHistory.length - 1];
-  if (lastAction.type === 'add-number') {
-    const number = lastAction.newValue;
-    const group = [...localState[lastAction.square.groupIndex]];
-    group.splice(lastAction.square.numberIndex, 1);
-    if (group.includes(number)) {
-      return {
-        isValid: false,
-        errorMessage: 'Number already exists in group',
-      };
-    }
+  const number = lastAction.newValue;
+  const group = [...localState[lastAction.square.groupIndex]];
+  group.splice(lastAction.square.numberIndex, 1);
+  if (group.includes(number)) {
+    return {
+      isValid: false,
+      errorMessage: 'Number already exists in group',
+    };
+  }
 
     const foundGroupRow = rows.find((row) => row.includes(lastAction.square.groupIndex));
     const foundGroupColumn = columns.find((column) => column.includes(lastAction.square.groupIndex));
@@ -74,10 +74,8 @@ export function validateGameState(gameState: GameState, actionHistory: ActionHis
         }
       }
     }
-    
-  }
 
-  return {
-    isValid: true,
-  };
+    return {
+      isValid: true,
+    };
 }
