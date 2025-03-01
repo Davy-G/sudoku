@@ -1,5 +1,5 @@
 // Dependencies
-import {useEffect, useState, useCallback} from 'react';
+import {useEffect, useState, useCallback, useRef} from 'react';
 
 // Components
 import GameBoard from '@/components/GameBoard/GameBoard';
@@ -35,10 +35,15 @@ function App() {
     // const [actionHistory, setActionHistory] = useState<ActionHistory>([]);
     const [validationResult, setValidationResult] = useState<ValidationResult>({isValid: true});
     const [Mistake, SetMistake] = useState<number>(0);
+    const isStrictMode = useRef(false); // Prevent double increment in Strict Mode
 
-    // function addActionToHistory(actionHistory: ActionHistory) {
-    //     setActionHistory(actionHistory);
-    // }
+    const handleMistake = () => {
+        if (!isStrictMode.current) {
+            isStrictMode.current = true;
+            setTimeout(() => (isStrictMode.current = false), 0); // Reset after state update
+            SetMistake((prev) => prev + 1);
+        }
+    };
 
     const handleNumberClick = useCallback((numberIndex: number, groupIndex: number) => {
         if (selectedSquare?.numberIndex === numberIndex && selectedSquare?.groupIndex === groupIndex) {
@@ -61,10 +66,7 @@ function App() {
                         newState[groupIndex][numberIndex] = selectedNumberKey;
                         let validation = validateGameState(newState, actionHistory);
                         if (!validation.isValid) {
-                            if (validationResult.isValid) {
-                                SetMistake(prevCount => prevCount + 1);
-                            }
-                            // SetMistake(prevCount => prevCount + 1);
+                            handleMistake();
                             setValidationResult(validation);
                             newState[groupIndex][numberIndex] = null;
                             // old.pop();
