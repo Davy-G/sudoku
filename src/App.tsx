@@ -11,6 +11,7 @@ import {ActionHistory, GameState, SelectedSquare, ValidationResult} from '@/type
 // Utils
 import {validateGameState} from '@/utils/game-state';
 import ValidationGrid from "@/components/ValidationGrid/ValidationGrid.tsx";
+import ErrorCount from "@/components/MistakeCount/MistakeCount.tsx";
 
 
 const EMPTY_GAME_STATE: GameState = [
@@ -33,6 +34,7 @@ function App() {
     const [gameState, setGameState] = useState<GameState>(EMPTY_GAME_STATE);
     // const [actionHistory, setActionHistory] = useState<ActionHistory>([]);
     const [validationResult, setValidationResult] = useState<ValidationResult>({isValid: true});
+    const [Mistake, SetMistake] = useState<number>(0);
 
     // function addActionToHistory(actionHistory: ActionHistory) {
     //     setActionHistory(actionHistory);
@@ -59,6 +61,10 @@ function App() {
                         newState[groupIndex][numberIndex] = selectedNumberKey;
                         let validation = validateGameState(newState, actionHistory);
                         if (!validation.isValid) {
+                            if (validationResult.isValid) {
+                                SetMistake(prevCount => prevCount + 1);
+                            }
+                            // SetMistake(prevCount => prevCount + 1);
                             setValidationResult(validation);
                             newState[groupIndex][numberIndex] = null;
                             // old.pop();
@@ -98,6 +104,7 @@ function App() {
                         newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = number;
                         let validation = validateGameState(newState, actionHistory);
                         if (!validation.isValid) {
+                            // SetMistake(prevCount => prevCount + 1);
                             setValidationResult(validation);
                             newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = null;
                             // old.pop();
@@ -145,6 +152,7 @@ function App() {
 
     return (
         <div className="flex flex-col gap-4 items-center justify-center h-screen px-4">
+            <ErrorCount errorCount={Mistake}/>
             <GameBoard
                 gameState={gameState}
                 onNumberClick={handleNumberClick}
