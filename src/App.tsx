@@ -6,32 +6,28 @@ import GameBoard from '@/components/GameBoard/GameBoard';
 import NumberKeyboard from '@/components/NumberKeyboard/NumberKeyboard';
 
 // Types
-import {ActionHistory, GameState, SelectedSquare, ValidationResult} from '@/types';
+import {GameState, SelectedSquare, ValidationResult} from '@/types';
 
 // Utils
 import {validateGameState} from '@/utils/game-state';
 import ValidationGrid from "@/components/ValidationGrid/ValidationGrid.tsx";
 import ErrorCount from "@/components/MistakeCount/MistakeCount.tsx";
+import {GenerateBoard} from "@/utils/GenerateBoard.ts";
 
 
-const EMPTY_GAME_STATE: GameState = [
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-];
+// let actionHistory: ActionHistory = [];
 
-let actionHistory: ActionHistory = [];
+const initialBoard = GenerateBoard(3);
+
+
+
 
 function App() {
+
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>(null);
     const [selectedNumberKey, setSelectedNumberKey] = useState<number | null>(null);
-    const [gameState, setGameState] = useState<GameState>(EMPTY_GAME_STATE);
+    const [gameState, setGameState] = useState<GameState>(initialBoard[0]);
+    const [actionHistory, setActionHistory] = useState(initialBoard[1]);
     // const [actionHistory, setActionHistory] = useState<ActionHistory>([]);
     const [validationResult, setValidationResult] = useState<ValidationResult>({isValid: true});
     const [Mistake, SetMistake] = useState<number>(0);
@@ -53,14 +49,24 @@ function App() {
             if (selectedNumberKey) {
                 const prevState = [...gameState];
                 if (prevState[groupIndex][numberIndex] !== selectedNumberKey) {
-                    let old = [...actionHistory];
-                    old.push({
-                        type: 'add-number',
-                        square: {numberIndex, groupIndex},
-                        newValue: selectedNumberKey,
-                        previousValue: prevState[groupIndex][numberIndex],
-                    });
-                    actionHistory = old;
+                    // let old = [...actionHistory];
+                    // old.push({
+                    //     type: 'add-number',
+                    //     square: {numberIndex, groupIndex},
+                    //     newValue: selectedNumberKey,
+                    //     previousValue: prevState[groupIndex][numberIndex],
+                    // });
+                    // setActionHistory(old);
+                    setActionHistory(prevHistory => [
+                        ...prevHistory,
+                        {
+                            type: 'add-number',
+                            square: { numberIndex, groupIndex },
+                            newValue: selectedNumberKey,
+                            previousValue: prevState[groupIndex][numberIndex],
+                        }
+                    ]);
+
                     setGameState((prevState) => {
                         const newState = [...prevState];
                         newState[groupIndex][numberIndex] = selectedNumberKey;
@@ -93,14 +99,24 @@ function App() {
             if (selectedSquare) {
                 const prevState = [...gameState];
                 if (prevState[selectedSquare.groupIndex][selectedSquare.numberIndex] !== number) {
-                    let old = [...actionHistory];
-                    old.push({
-                        type: 'add-number',
-                        square: selectedSquare,
-                        newValue: number,
-                        previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
-                    });
-                    actionHistory = old;
+                    // let old = [...actionHistory];
+                    // old.push({
+                    //     type: 'add-number',
+                    //     square: selectedSquare,
+                    //     newValue: number,
+                    //     previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                    // });
+                    // actionHistory = old;
+                    setActionHistory(prevHistory => [
+                        ...prevHistory,
+                        {
+                            type: 'add-number',
+                            square: selectedSquare,
+                            newValue: number,
+                            previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                        }
+                    ]);
+
                     setGameState((prevState) => {
                         const newState = [...prevState];
                         newState[selectedSquare.groupIndex][selectedSquare.numberIndex] = number;
