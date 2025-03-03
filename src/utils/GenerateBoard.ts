@@ -23,7 +23,7 @@ const rng = seedrandom(randomHexString(5));
 const EMPTY_GAME_STATE: GameState = Array.from({ length: 9 }, () => Array(9).fill(null));
 
 
-export function GenerateBoard(difficulty: Difficulty): [GameState, ActionHistory] {
+export function GenerateBoard(difficulty: Difficulty): {gameState: GameState, actionHistory: ActionHistory} {
     let gameState = EMPTY_GAME_STATE.map(row => [...row]);
     let actionHistory: ActionHistory = [];
     let fill = Math.floor(DiffConst / difficulty);
@@ -56,5 +56,5 @@ export function GenerateBoard(difficulty: Difficulty): [GameState, ActionHistory
         }
     }
 
-    return [gameState, actionHistory];
+    return {gameState, actionHistory};
 }
