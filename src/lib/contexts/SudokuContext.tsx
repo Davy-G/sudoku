@@ -27,7 +27,8 @@ export const SudokuProvider: React.FC<{ children: ReactNode }> = ({children}) =>
     const [selectedSquare, setSelectedSquare] = useState<SelectedSquare>(null);
     const [selectedNumberKey, setSelectedNumberKey] = useState<number | null>(null);
     const [gameState, setGameState] = useState<GameState>(initialBoard.gameState);
-    const [actionHistory, setActionHistory] = useState(initialBoard.actionHistory);
+    // const [actionHistory, setActionHistory] = useState(initialBoard.actionHistory);
+    let actionHistory = initialBoard.actionHistory;
     const [validationResult, setValidationResult] = useState<ValidationResult>({isValid: true});
     const [Mistake, SetMistake] = useState<number>(0);
     const isStrictMode = useRef(false); // Prevent double increment in Strict Mode
@@ -48,15 +49,23 @@ export const SudokuProvider: React.FC<{ children: ReactNode }> = ({children}) =>
             if (selectedNumberKey) {
                 const prevState = [...gameState];
                 if (prevState[groupIndex][numberIndex] !== selectedNumberKey) {
-                    setActionHistory(prevHistory => [
-                        ...prevHistory,
-                        {
-                            type: 'add-number',
-                            square: {numberIndex, groupIndex},
-                            newValue: selectedNumberKey,
-                            previousValue: prevState[groupIndex][numberIndex],
-                        }
-                    ]);
+                    // setActionHistory(prevHistory => [
+                    //     ...prevHistory,
+                    //     {
+                    //         type: 'add-number',
+                    //         square: {numberIndex, groupIndex},
+                    //         newValue: selectedNumberKey,
+                    //         previousValue: prevState[groupIndex][numberIndex],
+                    //     }
+                    // ]);
+                    let old = [...actionHistory];
+                    old.push({
+                        type: 'add-number',
+                        square: {numberIndex, groupIndex},
+                        newValue: selectedNumberKey,
+                        previousValue: prevState[groupIndex][numberIndex],
+                    });
+                    actionHistory = old;
 
                     setGameState((prevState) => {
                         const newState = [...prevState];
@@ -88,15 +97,24 @@ export const SudokuProvider: React.FC<{ children: ReactNode }> = ({children}) =>
             if (selectedSquare) {
                 const prevState = [...gameState];
                 if (prevState[selectedSquare.groupIndex][selectedSquare.numberIndex] !== number) {
-                    setActionHistory(prevHistory => [
-                        ...prevHistory,
-                        {
-                            type: 'add-number',
-                            square: selectedSquare,
-                            newValue: number,
-                            previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
-                        }
-                    ]);
+                    // setActionHistory(prevHistory => [
+                    //     ...prevHistory,
+                    //     {
+                    //         type: 'add-number',
+                    //         square: selectedSquare,
+                    //         newValue: number,
+                    //         previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                    //     }
+                    // ]);
+
+                    let old = [...actionHistory];
+                    old.push({
+                        type: 'add-number',
+                        square: selectedSquare,
+                        newValue: number,
+                        previousValue: prevState[selectedSquare.groupIndex][selectedSquare.numberIndex],
+                    });
+                    actionHistory = old;
 
                     setGameState((prevState) => {
                         const newState = [...prevState];
