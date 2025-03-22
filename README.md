@@ -1,9 +1,11 @@
-# Sudoku game built in react
+# Sudoku Game Built in React
+
 ## Description
-sudoku game with auto board generation and mistake counting.
+A Sudoku game with automatic board generation and mistake counting.
+
 ## Features
-<ul>
-  <li>Top notch design</li>
-  <li>Typescript for cleaner code</li>
-  <li>Board generation</li>
-</ul
+- **Top-notch design**
+- **TypeScript for cleaner code**
+- **Board generation**
+
+![Sudoku Screenshot](https://raw.githubusercontent.com/gogodze/sudoku/refs/heads/master/sudoku.png)
